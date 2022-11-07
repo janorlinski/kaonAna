@@ -1,0 +1,316 @@
+#ifndef __FILLNTUPLE___     // good style to avaoid multiple includes
+#define __FILLNTUPLE___
+
+#include "mylibs.h"
+#include "mystruc.h"
+
+#include "GlobVars.h"
+
+#include "UsefulFunctions.h"
+
+
+using namespace std;
+
+class FillNtuple : public HReconstructor
+{
+protected:
+    HParticleTrackSorter sorter;
+
+    BRANCH pid;
+    TTree *nt;
+
+    // file handling
+    TFile *mdcdEdx_cutfile_new_rpc;
+    TFile *mdcdEdx_cutfile_new_tof;
+    TFile *mdcdEdx_cutfile_new_tof2;
+    TFile *tofdEdx_cutfile;
+
+    TCutG *mdcdEdx_tof_Kp_data_new, *mdcdEdx_rpc_Kp_data_new, *mdcdEdx_tof_Km_data_new, *mdcdEdx_rpc_Km_data_new, *tofdEdx_beta_noK;
+
+
+
+public:
+
+    FillNtuple(const Text_t *name = "",const Text_t *title ="",TString outfile="FillNtuple.root")
+	: HReconstructor(name,title)
+    {  // init your vars
+
+    }
+
+    virtual ~FillNtuple()
+    {
+	// clean up all dynamically created objects
+
+    }
+
+    Bool_t init()
+    {
+	// this function is called once in the beginning
+	// create histograms or get pointer to param containers
+	// or data containers here. Tip: Create first your
+	// output file and and after that your histograms/ ntuples.
+	// In this way you make shure the object will end up in your
+        // root file and not any other one.
+
+	if(out) {
+	    out->cd();
+
+	    nt = new TTree("nt","pid");
+	    nt->Branch("pid",&pid,"chi2:metamatch:beta:betaOrg:tof:mom:momOrg:momcorr:"
+		                  "charge:mass:system:theta:phi:tofdedx:mdcdedx:"
+		                  "my_kaonmass:kaonmass:goodTofEloss:goodMdcEloss:"
+		                  "mtm0:pt:y"
+		      );
+
+	}
+
+	const char *tofcutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_tof_gen8a.root";
+	mdcdEdx_cutfile_new_tof = TFile::Open( tofcutFileName );
+	mdcdEdx_tof_Kp_data_new =(TCutG*)mdcdEdx_cutfile_new_tof->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *tofcutFileName2 = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_tof_gen8a_15sigma.root";
+	mdcdEdx_cutfile_new_tof2 = TFile::Open( tofcutFileName2 );
+	mdcdEdx_tof_Km_data_new =(TCutG*)mdcdEdx_cutfile_new_tof2->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *rpccutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_rpc_gen8a_rpc25.root";
+	mdcdEdx_cutfile_new_rpc = TFile::Open( rpccutFileName );
+	mdcdEdx_rpc_Kp_data_new =(TCutG*)mdcdEdx_cutfile_new_rpc->Get("KP_mdcdEdx_cut_scaled");
+	mdcdEdx_rpc_Km_data_new =(TCutG*)mdcdEdx_cutfile_new_rpc->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *kaonVetocutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/betaTofdEdx_noKm.root";
+	tofdEdx_cutfile = TFile::Open( kaonVetocutFileName );
+	tofdEdx_beta_noK =(TCutG*)tofdEdx_cutfile->Get("betaTofdEdx_noKm");
+
+
+	return kTRUE;
+    }
+    Bool_t reinit()
+    {   // this function is called for each file
+        // after init()
+	// use this place if you need already initialized
+	// containers
+
+
+	//--------------------------CONFIGURATION---------------------------------------------------
+	//At begin of the program (outside the event loop)
+	//sorter.setDebug();                                            // for debug
+	//sorter.setPrintLevel(3);                                      // max prints
+	//sorter.setRICHMatching(HParticleTrackSorter::kUseRKRICHWindow,4.); // select matching RICH-MDC for selectLeptons() function
+	//sorter.setUseYMatching(kTRUE);                                // use meta cell build in select functions
+	//sorter.setMetaBoundary(4.0);                                   // match in 4 mm to meta cell
+	//sorter.setUseBeta(kTRUE);                                     // require beta >0 in build in select functions
+	//sorter.setBetaLeptonCut(0.9);                                 // lower beta cut for lepton select
+	//sorter.setUseFakeRejection(kTRUE);                            // reject fakes in  build in select functions (default kTRUE)
+	//sorter.setIgnoreInnerMDC();                                   // do not reject Double_t inner MDC hits
+	//sorter.setIgnoreOuterMDC();                                   // do not reject Double_t outer MDC hits
+	//sorter.setIgnoreMETA();                                       // do not reject Double_t META hits
+	//sorter.setIgnorePreviousIndex();                              // do not reject indices from previous selctions
+	sorter.init();                                                  // get catgegory pointers etc...
+	//--------------------------------------------------------------------------------------------
+
+	const char *tofcutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_tof_gen8a.root";
+	mdcdEdx_cutfile_new_tof = TFile::Open( tofcutFileName );
+	mdcdEdx_tof_Kp_data_new =(TCutG*)mdcdEdx_cutfile_new_tof->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *tofcutFileName2 = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_tof_gen8a_15sigma.root";
+	mdcdEdx_cutfile_new_tof2 = TFile::Open( tofcutFileName2 );
+	mdcdEdx_tof_Km_data_new =(TCutG*)mdcdEdx_cutfile_new_tof2->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *rpccutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/Kp_cutfile_rpc_gen8a_rpc25.root";
+	mdcdEdx_cutfile_new_rpc = TFile::Open( rpccutFileName );
+	mdcdEdx_rpc_Kp_data_new =(TCutG*)mdcdEdx_cutfile_new_rpc->Get("KP_mdcdEdx_cut_scaled");
+	mdcdEdx_rpc_Km_data_new =(TCutG*)mdcdEdx_cutfile_new_rpc->Get("KP_mdcdEdx_cut_scaled");
+
+	const char *kaonVetocutFileName = "/lustre/nyx/hades/user/lchlad/flow/scripts/apr12/loopDST/rootFiles/betaTofdEdx_noKm.root";
+	tofdEdx_cutfile = TFile::Open( kaonVetocutFileName );
+	tofdEdx_beta_noK =(TCutG*)tofdEdx_cutfile->Get("betaTofdEdx_noKm");
+
+
+	return kTRUE;
+    }
+
+    Int_t execute()
+    {   // this function is called once per event.
+	// if the function returns kSkipEvent the event
+	// will be skipped a. for all following tasks
+	// and b. not appear in output (hades eventLoop())
+
+	if(gHades){
+
+	    HEventHeader* header  = gHades->getCurrentEvent()->getHeader();
+
+	    Float_t Vertex_z = header->getVertexZ();
+
+	    HCategory* evtInfoCat   = (HCategory*)HCategoryManager::getCategory(catParticleEvtInfo);
+	    HCategory* candCat      = (HCategory*)HCategoryManager::getCategory(catParticleCand);
+
+	    if(evtInfoCat)
+	    {
+
+		HParticleEvtInfo* evtInfo=0;
+		evtInfo = HCategoryManager::getObject(evtInfo,evtInfoCat,0 );
+
+		Double_t mult = evtInfo->getSumTofMultCut()+evtInfo->getSumRpcMultHitCut();
+
+		if(evtInfo && evtInfo->isGoodEvent(Particle::kGoodTRIGGER|
+						   Particle::kGoodVertexClust|
+						   Particle::kGoodVertexCand|
+						   Particle::kGoodSTART|
+						   Particle::kNoPileUpSTART|
+						   Particle::kNoVETO|
+						   Particle::kGoodSTARTVETO|
+						   Particle::kGoodSTARTMETA
+						  ) )
+		{
+		    //-------------------------------------------------
+		    // loop over particle candidates in event
+		    if(candCat){
+			TString filename;
+
+			Int_t sectors [6];
+			gLoop->getSectors(sectors); // fill sector array
+
+
+			//------------------------------------------------------------------------
+			// prepare track sorting
+			// clean vectors and index arrays
+			sorter.cleanUp();
+			sorter.resetFlags(kTRUE,kTRUE,kTRUE,kTRUE);
+			Int_t nCandHad     = sorter.fill(HParticleTrackSorter::selectHadrons);
+			Int_t nCandHadBest = sorter.selectBest(HParticleTrackSorter::kIsBestRK,HParticleTrackSorter::kIsHadron);
+
+			HParticleCand* cand=0;
+
+			Int_t size = candCat->getEntries();
+			for(Int_t j = 0; j < size; j++)
+			{
+			    cand = HCategoryManager::getObject(cand,candCat,j);
+
+			    if(!gLoop->goodSector(cand->getSector())) { continue;}  // skipp inactive sectors
+			    if(!cand->isFlagBit(kIsUsed)) continue;
+			    if(cand->isAtAnyMdcEdge()) continue;
+			    if(cand->getSystemUsed() == -1) continue;
+
+                            if(cand->getSystem() == 2) continue; //double counting
+
+			    if(cand) {
+				Short_t  system      = cand->getSystemUsed();
+				Short_t  charge      = cand->getCharge();
+				Float_t  beta        = cand->getBeta() ;
+				Float_t  mom         = cand->getMomentum();
+				Float_t  betaOrg     = cand->getBetaOrg() ;
+				Float_t  momOrg      = cand->getMomentumOrg();
+                                Float_t  momcorr     = cand->getCorrectedMomentumPID(12);
+				Float_t  phi         = cand->getPhi() ;
+				Float_t  theta       = cand->getTheta();
+				Float_t  chi2        = cand->getChi2();
+				Float_t  MetaMatchQA = cand->getMetaMatchQuality();
+				Float_t  mass2       = cand->getMass2();
+                                Float_t  Tof         = cand->getTof();
+                                Float_t  TofdEdx     = cand->getTofdEdx();
+				Float_t  MdcdEdx     = cand->getMdcdEdx();
+				Float_t  Kmass       = ( cand->getCorrectedMass2PID(12)<0 ? -1. : TMath::Sqrt(cand->getCorrectedMass2PID(12)) );
+
+				cand->calc4vectorProperties(HPhysicsConstants::mass(12));
+				Float_t  mtm0        = cand->Mt() - (HPhysicsConstants::mass(12));
+				Float_t  pt          = cand->Pt();
+                                Float_t  y           = cand->Rapidity();
+
+				Double_t gammaInv = ( cand->getBeta()>=1. ? 0 : TMath::Sqrt(1-TMath::Power(cand->getBeta(),2)) );
+				Float_t myKmass = ( cand->getCorrectedMomentumPID(12)*gammaInv )/cand->getBeta();
+
+                                Float_t goodTofEloss = -1, goodMdcEloss = -1;
+
+				//TOF dEdx veto
+				if( ( cand->getSystemUsed()==1 && !tofdEdx_beta_noK->IsInside(cand->getBetaOrg(),cand->getTofdEdx()) )
+				   || ( cand->getSystemUsed()==0 )
+				  )
+				    goodTofEloss = 1;
+
+
+				if( cand->getCharge()==1 ){
+				    //MDC dEdx cut
+				    if( ( cand->getSystemUsed()==1 && mdcdEdx_tof_Kp_data_new->IsInside(cand->getMomentumOrg(),cand->getMdcdEdx()) )
+				       || ( cand->getSystemUsed()==0 && mdcdEdx_rpc_Kp_data_new->IsInside(cand->getMomentumOrg(),cand->getMdcdEdx()) )
+				      )
+					goodMdcEloss = 1;
+				}
+
+				if( cand->getCharge()==-1 ){
+				    //MDC dEdx cut
+				    if( ( cand->getSystemUsed()==1 && mdcdEdx_tof_Km_data_new->IsInside(cand->getMomentumOrg(),cand->getMdcdEdx()) )
+				       || ( cand->getSystemUsed()==0 && mdcdEdx_rpc_Km_data_new->IsInside(cand->getMomentumOrg(),cand->getMdcdEdx()) )
+					      )
+					goodMdcEloss = 1;
+				}
+
+
+				pid.system            = system;
+				pid.tof               = Tof;
+				pid.theta             = theta;
+				pid.phi               = phi;
+				pid.mom               = mom;
+                                pid.momcorr           = momcorr;
+				pid.beta              = beta;
+                                pid.momOrg            = momOrg;
+				pid.betaOrg           = betaOrg;
+				pid.chi2              = chi2;
+				pid.charge            = charge;
+				pid.mass              = (mass2<0 ? -1 : TMath::Sqrt(mass2));
+				pid.metamatch         = MetaMatchQA;
+                                pid.tofdedx           = TofdEdx;
+				pid.mdcdedx           = MdcdEdx;
+				pid.my_kaonmass       = myKmass;
+				pid.kaonmass          = Kmass;
+				pid.goodTofEloss      = goodTofEloss;
+				pid.goodMdcEloss      = goodMdcEloss;
+
+				pid.mtm0              = mtm0;
+				pid.pt                = pt;
+                                pid.y                 = y;
+
+//				TLorentzVector kplusLV(1.,1.,1.,1.);
+//				HParticleTool::fillTLorentzVector(kplusLV,kpCand,11,true);
+
+
+				//only rough cuts:
+				if( chi2<400. && MetaMatchQA<4. && charge<0 )
+				    nt->Fill();
+			    }
+
+
+			} // end cand loop
+
+		    } // end cand cat
+		    //-------------------------------------------------
+		}
+		//-------------------------------------------------
+	    }
+	}
+
+	return 0;
+    }
+
+    Bool_t finalize()
+    {   // this function is called once in the end of the
+	// runtime of the program. Save histograms to file
+	// etc. Tip: Change to your ROOT output file before
+	// writing our histograms. You might not be the only
+	// user of root files and the current directory could
+        // the one from another user.
+
+	if(out) {
+	    out->cd();
+
+	    nt->Write();
+
+	    out->Save();
+	    out->Close();
+	}
+
+	return kTRUE;
+    }
+   //ClassDef(FillNtuple,0) // no streamer, do not use if you include blank header in ACLIC
+};
+
+#endif

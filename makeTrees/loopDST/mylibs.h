@@ -1,0 +1,148 @@
+#ifndef MYLIBS_H
+#define MYLIBS_H
+
+#define isEmbedding 0
+
+
+#include <iostream>
+#include <fstream>
+#include <unistd.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+#include <vector>
+#include <algorithm>
+#include <map>
+#include <set>
+//#include <random>   //for C++11 and newer!!
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
+
+
+#include <TMath.h>
+#include <TFile.h>
+#include <TH1.h>
+#include "TF1.h"
+#include <TH2.h>
+#include <TH3.h>
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TMultiGraph.h"
+#include <TCanvas.h>
+#include <TChain.h>
+#include <TString.h>
+#include <TRandom.h>
+#include "TRandom3.h"
+#include <TCutG.h>
+#include <TLorentzVector.h>
+#include <TTree.h>
+#include <TROOT.h>
+#include "TLegend.h"
+#include "TLegendEntry.h"
+#include "TNtuple.h"
+#include "TStyle.h"
+#include "TSystem.h"
+
+#include "TObjArray.h"
+#include "TObjString.h"
+#include "TStopwatch.h"
+#include "TCutG.h"
+#include "TArrayI.h"
+
+
+#include "GeomFunct.h" 
+#include "dxcorr.h"
+
+
+
+#include "hades.h"
+#include "htool.h"
+#include "hphysicsconstants.h"
+#include "hrootsource.h"
+#include "hiterator.h"
+#include "htree.h"
+#include "hlocation.h"
+#include "hdebug.h"
+#include "hreconstructor.h"
+#include "hevent.h"
+#include "heventheader.h"
+#include "hrecevent.h"
+#include "hlocation.h"
+#include "hcategory.h"
+#include "hmatrixcategory.h"
+#include "hlinearcategory.h"
+#include "hcategorymanager.h"
+#include "hloop.h"
+#include "htime.h"
+#include "hdst.h"
+#include "haddef.h"
+
+
+#include "hparticledef.h"
+#include "hparticlestructs.h"
+#include "hparticlecandsim.h"
+#include "hparticlevertexfind.h"
+#include "hparticleevtinfo.h"
+#include "htaskset.h"
+#include "hparticleanglecor.h"
+#include "hparticletool.h"
+#include "hrichhit.h"
+#include "richdef.h"
+#include "horadef.h"
+#include "horasimdef.h"
+#include "simulationdef.h"
+#include "hgeomvector.h"
+#include "showerdef.h"
+#include "hparticlecand.h"
+#include "hparticlecandsim.h"
+#include "hparticleevtinfo.h"
+#include "hparticletracksorter.h"
+#include "htofraw.h"
+#include "htofhit.h"
+#include "htofhitsim.h"
+#include "htofcluster.h"
+#include "hrpccluster.h"
+#include "hrpchit.h"
+#include "hrpchitsim.h"
+#include "hwallhit.h"
+#include "hwalleventplane.h"
+#include "hmdctrkcand.h"
+#include "hmetamatch2.h"
+#include "hstart2hit.h"
+#include "hstart2cal.h"
+#include "hstartdef.h"
+#include "hpiontrackerhit.h"
+#include "hpiontrackertrack.h"
+#include "tofdef.h"
+#include "rpcdef.h"
+#include "walldef.h"
+#include "hmdcdef.h"
+#include "hmdchitsim.h"
+#include "hmdctrackgdef.h"
+#include "hmdctrackddef.h"
+#include "hgeantkine.h"
+#include "hpartialevent.h"
+#include "hgeantheader.h"
+#include "hdatasource.h"
+#include "hrootsource.h"
+
+#include "henergylosscorrpar.h"
+#include "hparticlet0reco.h"
+
+#include "hsrckeeper.h"
+#include "hzip.h"
+
+#if isEmbedding
+#include "hparticleevtcharaBK.h"
+#else
+#include "hparticleevtchara.h"
+#endif
+
+#include "/cvmfs/hades.gsi.de/source/hydra2-5.4/eventmixer/heventmixer.h"
+#include "/cvmfs/hades.gsi.de/source/hydra2-5.4/eventmixer/eventclassifier.h"
+
+#include "hhistmap.h"
+#include "harray.h"
+#include "htool.h"
+
+#endif

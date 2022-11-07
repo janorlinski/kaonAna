@@ -1,0 +1,24 @@
+check if dxcorr.h is needed for compilation of analysis -> used only in mylibs.h
+put all #define at one place!! best probably would be analysis.h ?! there also include all libs etc.
+rewrite the classes of recontructors to *.h with all declarations and then *.C for the rest of code?!
+
+maybe use some #define XX which would be used to distinguish between the tasks? or even better would be to make it that the tasks would run in parallel but this is for sure too much effort and most probably would not gain any speed etc.
+
+check if there is not special list of good sectors for GEN9 !!
+
+is it possible to send parameter to Makefile? and propage it inside the code? Is it even good idea??
+-> why it might be usefull: when compiling one would say "make kcharge" and the analysis would be compiled with KChargerReco or "make neutral" and KZeroReco would be used instead... this is very convenient but is it save to use?
+
+MyGeantKine is not used anywhere?! did I found solution for finding the number of hits per GKine? Or did I abandon the idea of checking these values all together??
+
+FillNTuple actually fills the ThetaDphi for each centrality class for the calculation of occupancy correction!
+KPlusTree -> not used anymore (extended into kChargedTrees)
+Proton/Pion Tree(s) -> it was used only to check the occupancy corrections, could be actually extended and used as well but others are focusing at this!!
+
+Consider Global variable for centrality classes!! (used in multiple places - MEclassifiers.h and in GlobalVars -> but there is "mismatch" because onec there is 5% width and in classifier there are 10%? going to 0!!) -> check that!
+
+MVAK0s.h -> used for TMVA inclusion into KZaroTrees (former Reco)
+
+MVATrees.h -> different options selected with #define !! -> could be used as procedure parametrs?? anyhow loopDST_task can pass several more params!
+
+
