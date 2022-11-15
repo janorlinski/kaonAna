@@ -23,13 +23,15 @@ DAY is the selected day of data (for Ag+Ag@1.58A data this should be 058 or any 
 
 PARTICLE is the prefix for file name and so it can be anything. For consistency `Kcharged` is used for trees with K+ and K- while `Kzero` is used for TTrees for K0s analysis. 
 
-PID, TRACKCUTS and OCPID are important parameters which are passed on to the `analysis` program. They select different pid/track cuts/occupancy correction scenarios.
+PID, TRACKCUTS and OCPID are important parameters which are passed on to the `analysis` program. They select different pid/track cuts/occupancy correction scenarios. For further reference see subsection "Parameters for loopDST_task.cc".
 
-From which machine do you do this???
+This should be send from virgo. Any setup that understands `sbatch` and such commands should work.
 
 ##### Compilation
 
+The program can be compiled by executing `make` on the local machine.
 
+##### Parameters for loopDST_task.C
 
-#####
+loopDST_task.C accepts three parameters. They are passed to the sendJobArrayScript.sh, passed on to analysis where they are converted to integers and passed as arguments of loopDST_task.C. loopDST_task.C passed them further to the respective KZeroTrees or KChargedTrees task.
 
